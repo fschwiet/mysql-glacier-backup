@@ -1,4 +1,6 @@
 
+var AWS = require('aws-sdk');
+var fs = require("fs");
 var Q = require("q");
 var sprintf = require("sprintf").sprintf;
 var childProcess = require("child_process");
@@ -8,8 +10,27 @@ var hostname = "localhost";
 var databaseName = "testtemp";
 var username = "root";
 var password = "";
-var outputFile = "./test.sql";
 
+var vaultName = 'mysql-glacier-backup';
+
+
+task("testGlacier", function() {
+    
+    AWS.config.loadFromPath('./glacier.config');
+
+    var glacier = new AWS.Glacier();    
+
+    return Q()
+    .then(function() {
+        return Q.ninvoke(glacier, "createVault", { vaultName: vaultName});
+    })
+    .then(function() {
+        return Q.ninvoke(glacier, "uploadArchive", { vaultName: vaultName, body: { "foo":"Bar"}});
+    })
+    .then(function(data){
+        console.log("data", data);
+    });
+});
 
 task("createBackup", function() {
 
@@ -19,7 +40,7 @@ task("createBackup", function() {
 
     console.log("Generating backup", filename);
 
-    var mysqldumpArgs = ["--host",  hostname, "-u", username, "-r", outputFile, databaseName];
+    var mysqldumpArgs = ["--host",  hostname, "-u", username, databaseName];
 
     if (password !== null) {
         mysqldumpArgs.splice(0,0, "--password=" + password);
