@@ -25,7 +25,7 @@ task("testGlacier", function() {
         return Q.ninvoke(glacier, "createVault", { vaultName: vaultName});
     })
     .then(function() {
-        return Q.ninvoke(glacier, "uploadArchive", { vaultName: vaultName, body: { "foo":"Bar"}});
+        return Q.ninvoke(glacier, "uploadArchive", { vaultName: vaultName, body: "Hello, world"});
     })
     .then(function(data){
         console.log("data", data);
