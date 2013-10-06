@@ -25,7 +25,8 @@ var mysqldumpArgs = getMysqlDumpParameters(config.hostname, config.username, con
 Q()
 .then(function() {
     return Q.ninvoke(childProcess, "execFile", config.mysqlDumpPath, mysqldumpArgs, {
-        stdio: "inherit"
+        stdio: "inherit",
+        maxBuffer: 1024 * 1024 * 200
     });
 }) 
 .then(function(results) {
